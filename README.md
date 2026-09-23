@@ -46,7 +46,7 @@ Boot the Pi, SSH in (`ssh pi@videonode.local`), then:
 
 ```bash
 sudo apt update && sudo apt install -y git
-git clone https://github.com/YOUR-USERNAME/videonode.git ~/videonode-src
+git clone https://github.com/RichardA1/videonode.git ~/videonode-src
 cd ~/videonode-src
 bash install.sh
 ```
