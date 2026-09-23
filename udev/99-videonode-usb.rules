@@ -1,0 +1,3 @@
+# VideoNode: hand USB drive partitions to systemd for mounting at /media/usb.
+# (Mounting directly from udev doesn't work: udev runs in its own mount namespace.)
+ACTION=="add", SUBSYSTEM=="block", KERNEL=="sd[a-z]*", ENV{ID_FS_USAGE}=="filesystem", TAG+="systemd", ENV{SYSTEMD_WANTS}+="videonode-usb@%k.service"

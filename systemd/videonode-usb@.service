@@ -1,0 +1,12 @@
+# Mounts a USB drive read-only at /media/usb when it's plugged in, and
+# unmounts it when it's removed. Started by udev/99-videonode-usb.rules.
+[Unit]
+Description=VideoNode USB mount for /dev/%i
+BindsTo=dev-%i.device
+After=dev-%i.device
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/bin/videonode-usb-mount add %i
+ExecStop=/usr/local/bin/videonode-usb-mount remove %i

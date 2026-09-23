@@ -1,0 +1,23 @@
+# Installed by install.sh (@USER@ and @HOME@ are filled in automatically)
+[Unit]
+Description=VideoNode offline video player
+After=local-fs.target systemd-user-sessions.service
+# Never give up restarting
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+User=@USER@
+Group=@USER@
+# video/render = display, input = keyboard & mouse, audio = sound
+SupplementaryGroups=video render input audio
+WorkingDirectory=@HOME@/videonode
+ExecStart=/usr/bin/python3 @HOME@/videonode/videonode.py --config @HOME@/videonode/videonode.conf
+Environment=PYTHONUNBUFFERED=1
+Environment=SDL_VIDEODRIVER=kmsdrm
+Restart=always
+RestartSec=3
+TimeoutStopSec=10
+
+[Install]
+WantedBy=multi-user.target

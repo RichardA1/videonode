@@ -1,0 +1,42 @@
+#!/bin/sh
+# videonode-usb-mount add|remove <kernel device name, e.g. sda1>
+#
+# Mounts the first USB drive plugged in at /media/usb, read-only, so it's
+# safe to unplug at any time. Media goes in /media/usb/videos/{long,short,images}.
+set -eu
+
+MNT=/media/usb
+OWNER=@USER@
+ACTION=${1:?usage: $0 add|remove DEVICE}
+DEV=/dev/${2:?usage: $0 add|remove DEVICE}
+
+say() { logger -t videonode-usb "$*"; echo "$*"; }
+
+case "$ACTION" in
+add)
+    if mountpoint -q "$MNT"; then
+        say "$MNT already in use, not mounting $DEV"
+        exit 0
+    fi
+    FSTYPE=$(blkid -o value -s TYPE "$DEV" 2>/dev/null || true)
+    [ -n "$FSTYPE" ] || { say "No filesystem on $DEV, ignoring"; exit 0; }
+    mkdir -p "$MNT"
+    OWN="uid=$(id -u "$OWNER"),gid=$(id -g "$OWNER"),umask=022"
+    case "$FSTYPE" in
+        vfat|exfat)     mount -t "$FSTYPE" -o "ro,noatime,$OWN" "$DEV" "$MNT" ;;
+        ntfs)           mount -t ntfs-3g -o "ro,noatime,$OWN" "$DEV" "$MNT" ;;
+        ext2|ext3|ext4) mount -o ro,noatime "$DEV" "$MNT" ;;
+        *) say "Unsupported filesystem $FSTYPE on $DEV, ignoring"; exit 0 ;;
+    esac
+    say "Mounted $DEV ($FSTYPE) read-only at $MNT"
+    ;;
+remove)
+    if [ "$(findmnt -rno SOURCE "$MNT" 2>/dev/null || true)" = "$DEV" ]; then
+        umount -l "$MNT" && say "Unmounted $DEV from $MNT"
+    fi
+    ;;
+*)
+    echo "usage: $0 add|remove DEVICE" >&2
+    exit 1
+    ;;
+esac

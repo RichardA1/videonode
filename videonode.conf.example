@@ -1,0 +1,66 @@
+[videonode]
+# Most of these can also be changed from the on-screen Settings menu.
+
+# Mode used by auto-start: full (Episodes) or sample (Quick Cuts).
+# The menu updates this to whatever you last picked.
+mode = full
+
+# --- Menu ---
+# Show the on-screen menu (no = play straight away, no menu)
+ui = yes
+# After boot, start playing after this many seconds unless a key is pressed (0 = stay in menu)
+autostart_seconds = 15
+# If the menu is left untouched this long, resume playing (0 = never)
+idle_resume_seconds = 300
+
+# --- Media folders ---
+# USB is checked first; if it has no media, the SD card is used.
+usb_root = /media/usb/videos
+sd_root = /home/pi/videos
+long_dir = long
+short_dir = short
+images_dir = images
+
+# --- Episodes mode ---
+# Random short clips and images played between long videos
+num_short_clips = 3
+num_images = 2
+# Seconds each image stays on screen
+image_seconds = 8
+
+# --- Quick Cuts mode ---
+sample_seconds = 30
+# Cuts per mpv run (bigger = fewer gaps)
+sample_batch = 10
+# Skip this many seconds at the start/end of each video (intros, credits)
+sample_margin = 10
+sample_include_short = no
+sample_include_images = yes
+
+extensions = .mp4 .mkv .m4v .mov
+image_extensions = .jpg .jpeg .png .webp .bmp .gif
+
+# Ignore files modified in the last N seconds (still being copied over the network)
+min_file_age = 30
+
+# Player command (files are appended automatically)
+player_cmd = mpv --hwdec=v4l2m2m-copy --vo=gpu --gpu-context=drm --fullscreen --no-osc --osd-level=0 --input-terminal=no --msg-level=all=error
+
+# Leave blank for the default. If there's no sound on the TV, run
+#   mpv --audio-device=help
+# and paste the HDMI entry here, e.g. alsa/plughw:CARD=vc4hdmi,DEV=0
+audio_device =
+
+# Remember which long video is next across reboots (Episodes mode)
+resume = yes
+state_file = /home/pi/.videonode_state.json
+
+# Seconds between rescans when no media is found (e.g. waiting for USB)
+rescan_interval = 10
+
+# Safety limit for a full video whose length can't be read (0 = none)
+max_play_seconds = 0
+
+log_level = INFO
+# Optional log file. Blank = journald only (fewer SD card writes).
+log_file =
